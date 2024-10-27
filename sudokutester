@@ -1,0 +1,168 @@
+/*O jogo de Sudoku espalhou-se rapidamente por todo o mundo, tornando-se hoje o passatempo mais popular em todo o planeta. Muitas pessoas, entretanto, preenchem a matriz de forma incorreta, desrespeitando as restrições do jogo. Sua tarefa neste problema é escrever um programa que verifica se uma matriz preenchida é ou não uma solução para o problema.
+
+A matriz do jogo é uma matriz de inteiros 9 x 9 . Para ser uma solução do problema, cada linha e coluna deve conter todos os números de 1 a 9. Além disso, se dividirmos a matriz em 9 regiões 3 x 3, cada uma destas regiões também deve conter os números de 1 a 9. O exemplo abaixo mostra uma matriz que é uma solução do problema.*/
+
+/*Entrada
+São dadas várias instâncias. O primeiro dado é o número n > 0 de matrizes na entrada. Nas linhas seguintes são dadas as n matrizes. Cada matriz é dada em 9 linhas, em que cada linha contém 9 números inteiros.
+
+Saída
+Para cada instância seu programa deverá imprimir uma linha dizendo "Instancia k", onde k é o número da instância atual. Na segunda linha, seu programa deverá imprimir "SIM" se a matriz for a solução de um problema de Sudoku, e "NAO" caso contrário. Imprima uma linha em branco após cada instância.*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int verifica_repetido(int matriz_geral[9][9], int linha, int coluna, int numero) {
+
+  // 1 = repetido
+  // 0 = unico, pode ser colocado
+  int i, j;
+  
+  for (i = 0; i < 9; i++) {
+    if (matriz_geral[linha][i] == numero) {
+      return 1;
+    }
+    if (matriz_geral[i][coluna] == numero) {
+      return 1;
+    }
+  }
+  
+  int linha_inicio = linha - (linha % 3);
+  int coluna_inicio = coluna - (coluna % 3);
+  
+  for (i = linha_inicio; i < linha_inicio + 3; i++) {
+    for (j = coluna_inicio; j < coluna_inicio + 3; j++) {
+      if (matriz_geral[i][j] == numero) {
+        return 1; // Tem um no quadradinho 3x3
+      }
+    }
+  }
+  
+  return 0;
+}
+
+int verifica_limpo(int matriz_geral[9][9], int linha, int coluna) {
+
+  // 1 = limpo
+  // 0 = ocupado
+  
+  if (matriz_geral[linha][coluna] == 0) {
+    return 1;
+  }
+  return 0;
+}
+
+int verifica_3x3(int matriz_geral[9][9], int linha_inicial, int coluna_inicial) {
+
+  int i, j;
+  int vetor[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+  
+  linha_inicial = linha_inicial - (linha_inicial % 3); // Just in case :/
+  coluna_inicial = coluna_inicial - (coluna_inicial % 3);
+  
+  for (i = linha_inicial; i < linha_inicial + 3; i++) {
+    for (j = coluna_inicial; j < coluna_inicial + 3; j++) {
+      if (matriz_geral[i][j] != 0) {
+        if (vetor[matriz_geral[i][j] - 1] == 0) {
+          vetor[matriz_geral[i][j] - 1] = 1;
+        } else {
+          return 0; // Numero repetido
+          }
+      } else {
+        return 0; // Não completo
+        }
+    }
+  }
+  return 1;
+}
+
+int verifica_linha(int matriz_geral[9][9], int linha) {
+
+  int i;
+  int vetor[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+  
+  for (i = 0; i < 9; i++) {
+    if (matriz_geral[linha][i] != 0) {
+      if (vetor[matriz_geral[linha][i] - 1] == 0) {
+        vetor[matriz_geral[linha][i] - 1] = 1;
+      } else {
+        return 0; // Numero repetido
+        }
+    } else {
+      return 0; // Não completo
+      }
+  }
+  return 1;
+}
+
+int verifica_coluna(int matriz_geral[9][9], int coluna) {
+
+  int i;
+  int vetor[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+  for (i = 0; i < 9; i++) {
+    if (matriz_geral[i][coluna] != 0) {
+      if (vetor[matriz_geral[i][coluna] - 1] == 0) {
+        vetor[matriz_geral[i][coluna] - 1] = 1;
+      } else {
+        return 0; // Numero repetido
+        }
+    } else {
+      return 0; // Não completo
+      }
+  }
+  return 1;
+}
+
+int verifica_completo(int matriz_geral[9][9]) {
+  int i, j;
+  for (i = 0; i < 9; i++) {
+    if (verifica_linha(matriz_geral, i) == 0) {
+      return 0;
+    }
+    if (verifica_coluna(matriz_geral, i) == 0) {
+      return 0;
+    }
+  }
+  for (i = 0; i < 9; i += 3) {
+    for (j = 0; j < 9; j += 3) {
+      if (verifica_3x3(matriz_geral, i, j) == 0) {
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
+int main(void){
+
+  int n = 0;
+  int matrix[9][9];
+
+  // Ler o número de instâncias
+  scanf("%d", &n);
+
+  for (int k = 1; k <= n; k++) {
+      int matriz[9][9];
+
+      // Ler a matriz 9x9
+      for (int i = 0; i < 9; i++) {
+          for (int j = 0; j < 9; j++) {
+              scanf("%d", &matrix[i][j]);
+          }
+      }
+  
+    // Verificar se a matriz é uma solução de Sudoku
+    printf("\nInstancia %d\n", k);
+    if (verifica_completo) {
+        printf("SIM\n");
+    } else {
+        printf("NAO\n");
+      }
+
+    // Linha em branco após cada instância
+    printf("\n");
+
+  }
+    
+return 0;
+}
